@@ -112,8 +112,8 @@ EOF
   fi
 }
 
-# Set GitHub CLI default editor to vim
-command -v gh &>/dev/null && gh config set editor vim
+# Set GitHub CLI default editor to nvim
+command -v gh &>/dev/null && gh config set editor nvim
 
 install_delta
 install_nvim
