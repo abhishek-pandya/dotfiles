@@ -1,4 +1,7 @@
 
+# Aliases
+command -v eza &>/dev/null && alias ls='eza'
+
 # Ona-specific setup
 if [[ "${IS_ON_ONA}" == "true" ]]; then
   # Ona secrets

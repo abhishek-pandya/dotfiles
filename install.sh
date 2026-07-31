@@ -1,76 +1,49 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-# Pinned version for the Linux git-delta download. neovim uses the "stable" tag.
-DELTA_VERSION="0.18.2"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 log() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 
-# download <url> <dest>
-download() {
-  if command -v curl &>/dev/null; then
-    curl -fsSL "$1" -o "$2"
-  else
-    wget -qO "$2" "$1"
-  fi
+# macOS: install everything declared in the Brewfile.
+install_macos() {
+  log "Installing packages from Brewfile..."
+  brew bundle --file "$DOTFILES/Brewfile"
 }
 
-# Map `uname -m` to a normalized arch, or "unsupported".
-detect_arch() {
-  case "$(uname -m)" in
-    x86_64|amd64) echo "x86_64" ;;
-    aarch64|arm64) echo "arm64" ;;
-    *) echo "unsupported" ;;
-  esac
+# eza isn't in Ubuntu's default repos, so add its official apt repo.
+# Best-effort: called via `|| log`, so a failure here doesn't abort the run.
+setup_eza_repo() {
+  local list="/etc/apt/sources.list.d/gierens.list"
+  [[ -f "$list" ]] && return
+  command -v curl &>/dev/null || { log "curl missing; skipping eza apt repo"; return; }
+  log "Adding eza apt repository..."
+  sudo apt-get install -y gpg
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://raw.githubusercontent.com/eza-community/eza/main/deb.asc \
+    | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" \
+    | sudo tee "$list" >/dev/null
+  sudo chmod 644 /etc/apt/keyrings/gierens.gpg "$list"
 }
 
-install_delta() {
-  if command -v delta &>/dev/null; then
-    log "git-delta already installed"
-    return
-  fi
-  log "Installing git-delta..."
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    brew install git-delta
-    return
-  fi
+# Ona (Ubuntu): install the apt package list.
+install_ona() {
+  log "Installing apt packages..."
+  sudo apt-get update -y || true
+  setup_eza_repo || log "eza apt repo setup failed; skipping eza"
+  sudo apt-get update -y || true
 
-  local triple tmp
-  case "$(detect_arch)" in
-    x86_64) triple="x86_64-unknown-linux-gnu" ;;
-    arm64) triple="aarch64-unknown-linux-gnu" ;;
-    *) echo "Unsupported arch for git-delta: $(uname -m)" >&2; return 1 ;;
-  esac
-  tmp="$(mktemp -d)"
-  download "https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/delta-${DELTA_VERSION}-${triple}.tar.gz" "$tmp/delta.tar.gz"
-  tar -xzf "$tmp/delta.tar.gz" -C "$tmp"
-  sudo install -m 0755 "$tmp/delta-${DELTA_VERSION}-${triple}/delta" /usr/local/bin/delta
-  rm -rf "$tmp"
-}
+  local pkg
+  while read -r pkg; do
+    [[ -z "$pkg" || "$pkg" == \#* ]] && continue
+    sudo apt-get install -y "$pkg" || log "apt could not install '$pkg'; skipping"
+  done < "$DOTFILES/apt-packages.txt"
 
-install_nvim() {
-  if command -v nvim &>/dev/null; then
-    log "neovim already installed"
-    return
+  # On Debian/Ubuntu the bat binary is installed as 'batcat'; expose it as 'bat'.
+  if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then
+    sudo ln -sf "$(command -v batcat)" /usr/local/bin/bat
   fi
-  log "Installing neovim..."
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    brew install neovim
-    return
-  fi
-
-  local arch tmp
-  arch="$(detect_arch)"
-  if [[ "$arch" == "unsupported" ]]; then
-    echo "Unsupported arch for neovim: $(uname -m)" >&2
-    return 1
-  fi
-  tmp="$(mktemp -d)"
-  download "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-${arch}.tar.gz" "$tmp/nvim.tar.gz"
-  sudo rm -rf "/opt/nvim-linux-${arch}"
-  sudo tar -xzf "$tmp/nvim.tar.gz" -C /opt
-  sudo ln -sf "/opt/nvim-linux-${arch}/bin/nvim" /usr/local/bin/nvim
-  rm -rf "$tmp"
 }
 
 # Point git at delta for diffs, paging, and merge conflicts.
@@ -115,12 +88,18 @@ EOF
 # Set GitHub CLI default editor to nvim
 command -v gh &>/dev/null && gh config set editor nvim
 
-install_delta
-install_nvim
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  install_macos
+elif [[ "${IS_ON_ONA:-}" == "true" ]]; then
+  install_ona
+else
+  log "Not macOS and not Ona; skipping package install."
+fi
+
 configure_delta
 configure_claude
 
-if [[ "${IS_ON_ONA}" == "true" ]]; then
+if [[ "${IS_ON_ONA:-}" == "true" ]]; then
   # Set default shell to zsh
   sudo chsh "$(id -un)" --shell "/usr/bin/zsh"
 

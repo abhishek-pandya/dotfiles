@@ -1,0 +1,7 @@
+# Ubuntu/Ona packages, one per line. Blank lines and # comments are ignored.
+# eza is not in Ubuntu's default repos; install.sh adds its official apt repo.
+git-delta
+neovim
+fzf
+bat
+eza
