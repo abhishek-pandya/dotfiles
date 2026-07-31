@@ -1,6 +1,7 @@
 
 # Aliases
 command -v eza &>/dev/null && alias ls='eza'
+command -v bat &>/dev/null && alias cat='bat --paging=never'
 
 # Ona-specific setup
 if [[ "${IS_ON_ONA}" == "true" ]]; then
