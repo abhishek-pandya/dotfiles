@@ -1,7 +1,15 @@
 # Ubuntu/Ona packages, one per line. Blank lines and # comments are ignored.
-# eza is not in Ubuntu's default repos; install.sh adds its official apt repo.
-git-delta
-neovim
+#
+# Write `package` when the binary matches the package name, or `package:binary`
+# when they differ — install.sh checks the binary and skips anything already
+# on PATH, so re-runs cost nothing.
+#
+# eza is not in Ubuntu's default repos; install.sh adds its official apt repo,
+# but only when eza is actually missing.
+#
+# neovim is deliberately NOT here: apt ships 0.9.5 plus ~14 dependencies, so
+# install.sh fetches the official static tarball instead.
+git-delta:delta
 fzf
-bat
+bat:batcat
 eza
