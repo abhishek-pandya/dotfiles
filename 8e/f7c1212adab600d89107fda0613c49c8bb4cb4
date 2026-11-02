@@ -1,0 +1,19 @@
+install.sh
+  s_cea1ca46b183dc::t_c4365ab2d3fb34 113-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "8ef7c1212adab600d89107fda0613c49c8bb4cb4",
+  "prompts": {},
+  "sessions": {
+    "s_cea1ca46b183dc": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "s_cea1ca46b183dc",
+        "model": "unknown"
+      },
+      "human_author": "Abhi Pandya <abpandya106@gmail.com>"
+    }
+  }
+}
