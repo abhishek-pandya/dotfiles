@@ -167,6 +167,9 @@ statement = ""
 in_table = False
 in_tui = False
 vim_written = False
+trusted_project = "/workspaces/obsidian"
+in_project = False
+trust_written = False
 for line in original.splitlines(keepends=True):
     statement += line
     try:
@@ -176,12 +179,20 @@ for line in original.splitlines(keepends=True):
     if statement.lstrip().startswith("["):
         in_table = True
         in_tui = parsed == {"tui": {}}
+        in_project = parsed == {"projects": {trusted_project: {}}}
         kept.append(statement)
+        if in_project:
+            if not statement.endswith("\n"):
+                kept.append("\n")
+            kept.append('trust_level = "trusted"\n')
+            trust_written = True
         if in_tui:
             if not statement.endswith("\n"):
                 kept.append("\n")
             kept.append("vim_mode_default = true\n")
             vim_written = True
+    elif in_project and "trust_level" in parsed:
+        pass
     elif in_tui and "vim_mode_default" in parsed:
         pass
     elif not in_table and set(parsed) == {"tui"} and set(parsed["tui"]) == {"vim_mode_default"}:
@@ -194,8 +205,14 @@ updated = "".join(f'{key} = {json.dumps(value)}\n' for key, value in defaults.it
 updated += "".join(kept)
 if not vim_written:
     updated += "\n[tui]\nvim_mode_default = true\n"
+if not trust_written:
+    updated += f'\n[projects.{json.dumps(trusted_project)}]\ntrust_level = "trusted"\n'
 expected = settings | defaults
 expected["tui"] = settings.get("tui", {}) | {"vim_mode_default": True}
+projects = settings.get("projects", {})
+expected["projects"] = projects | {
+    trusted_project: projects.get(trusted_project, {}) | {"trust_level": "trusted"}
+}
 # Verify that only the requested defaults changed before touching the file.
 if statement or tomllib.loads(updated) != expected:
     raise SystemExit("Could not safely update Codex config; existing file unchanged.")

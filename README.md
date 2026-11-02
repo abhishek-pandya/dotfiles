@@ -18,6 +18,8 @@ enables Vim mode in the CLI composer, and disables CLI startup update checks.
 Update Codex through your environment's package management or `codex update`.
 These apply to new sessions unless overridden by
 project settings, profiles, launch options, or organization requirements.
+It also marks `/workspaces/obsidian` as trusted so Codex can load that repository's
+settings without asking for folder trust on each new environment.
 
 When Codex is on PATH, the installer registers the `warpdotdev/codex-warp`
 marketplace and installs `warp@codex-warp` for Warp terminal notifications.
