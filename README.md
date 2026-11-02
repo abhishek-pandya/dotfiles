@@ -19,6 +19,11 @@ Update Codex through your environment's package management or `codex update`.
 These apply to new sessions unless overridden by
 project settings, profiles, launch options, or organization requirements.
 
+When Codex is on PATH, the installer registers the `warpdotdev/codex-warp`
+marketplace and installs `warp@codex-warp` for Warp terminal notifications.
+Already installed and enabled plugins are skipped. Restart Codex after installation.
+The plugin's `jq` dependency is included in both package lists.
+
 Symlink (or copy) the files into your home directory:
 
 ```bash

@@ -13,3 +13,4 @@ git-delta:delta
 fzf
 bat:batcat
 eza
+jq

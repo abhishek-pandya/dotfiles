@@ -204,6 +204,27 @@ path.write_text(updated)
 PY
 }
 
+configure_codex_plugins() {
+  if ! command -v codex &>/dev/null; then
+    log "Codex not installed; skipping plugins. Rerun install.sh after installing Codex."
+    return
+  fi
+  local marketplaces plugins
+  marketplaces="$(codex plugin marketplace list --json)"
+  if ! jq -e '.marketplaces | any(.name == "codex-warp")' <<< "$marketplaces" >/dev/null; then
+    codex plugin marketplace add warpdotdev/codex-warp
+  fi
+  plugins="$(codex plugin list --json)"
+  if jq -e '.installed | any(.pluginId == "warp@codex-warp" and .enabled)' <<< "$plugins" >/dev/null; then
+    log "Warp Codex plugin already installed and enabled."
+    return
+  fi
+  log "Installing Warp Codex plugin..."
+  codex plugin add warp@codex-warp
+  plugins="$(codex plugin list --json)"
+  jq -e '.installed | any(.pluginId == "warp@codex-warp" and .enabled)' <<< "$plugins" >/dev/null
+}
+
 # Set GitHub CLI default editor to nvim.
 configure_gh() {
   command -v gh &>/dev/null || return
@@ -222,6 +243,7 @@ fi
 configure_delta
 configure_claude
 configure_codex
+configure_codex_plugins
 configure_gh
 
 if [[ "${IS_ON_ONA:-}" == "true" ]]; then
