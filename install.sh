@@ -144,6 +144,66 @@ EOF
   fi
 }
 
+configure_codex() {
+  log "Configuring Codex defaults..."
+  python3 - "${CODEX_HOME:-$HOME/.codex}/config.toml" <<'PY'
+import json
+import pathlib
+import sys
+import tomllib
+
+path = pathlib.Path(sys.argv[1])
+original = path.read_text() if path.exists() else ""
+settings = tomllib.loads(original)
+defaults = {
+    "approval_policy": "never",
+    "sandbox_mode": "danger-full-access",
+    "model": "gpt-6-astra",
+    "model_reasoning_effort": "medium",
+    "check_for_update_on_startup": False,
+}
+kept = []
+statement = ""
+in_table = False
+in_tui = False
+vim_written = False
+for line in original.splitlines(keepends=True):
+    statement += line
+    try:
+        parsed = tomllib.loads(statement)
+    except tomllib.TOMLDecodeError:
+        continue
+    if statement.lstrip().startswith("["):
+        in_table = True
+        in_tui = parsed == {"tui": {}}
+        kept.append(statement)
+        if in_tui:
+            if not statement.endswith("\n"):
+                kept.append("\n")
+            kept.append("vim_mode_default = true\n")
+            vim_written = True
+    elif in_tui and "vim_mode_default" in parsed:
+        pass
+    elif not in_table and set(parsed) == {"tui"} and set(parsed["tui"]) == {"vim_mode_default"}:
+        pass
+    elif in_table or not defaults.keys() & parsed.keys():
+        kept.append(statement)
+    statement = ""
+
+updated = "".join(f'{key} = {json.dumps(value)}\n' for key, value in defaults.items())
+updated += "".join(kept)
+if not vim_written:
+    updated += "\n[tui]\nvim_mode_default = true\n"
+expected = settings | defaults
+expected["tui"] = settings.get("tui", {}) | {"vim_mode_default": True}
+# Verify that only the requested defaults changed before touching the file.
+if statement or tomllib.loads(updated) != expected:
+    raise SystemExit("Could not safely update Codex config; existing file unchanged.")
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text(updated)
+PY
+}
+
 # Set GitHub CLI default editor to nvim.
 configure_gh() {
   command -v gh &>/dev/null || return
@@ -161,6 +221,7 @@ fi
 
 configure_delta
 configure_claude
+configure_codex
 configure_gh
 
 if [[ "${IS_ON_ONA:-}" == "true" ]]; then
