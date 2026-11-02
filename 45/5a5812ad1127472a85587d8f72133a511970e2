@@ -1,0 +1,21 @@
+README.md
+  s_a2b1afd7059fd4::t_89c9aed4b3ef97 10-21
+install.sh
+  s_a2b1afd7059fd4::t_d61c80fdbc11f4 147-206,224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "455a5812ad1127472a85587d8f72133a511970e2",
+  "prompts": {},
+  "sessions": {
+    "s_a2b1afd7059fd4": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "s_a2b1afd7059fd4",
+        "model": "unknown"
+      },
+      "human_author": "Abhi Pandya <abpandya106@gmail.com>"
+    }
+  }
+}
