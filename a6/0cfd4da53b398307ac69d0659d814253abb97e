@@ -1,0 +1,21 @@
+README.md
+  s_17f420713ce1de::t_594e64e1f2f391 21-22
+install.sh
+  s_17f420713ce1de::t_64fae38f3bc042 170-172,182,184-188,194-195,208-209,212-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "a60cfd4da53b398307ac69d0659d814253abb97e",
+  "prompts": {},
+  "sessions": {
+    "s_17f420713ce1de": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "s_17f420713ce1de",
+        "model": "unknown"
+      },
+      "human_author": "Abhi Pandya <abpandya106@gmail.com>"
+    }
+  }
+}
