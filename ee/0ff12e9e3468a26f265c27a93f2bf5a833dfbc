@@ -1,0 +1,21 @@
+.zshrc
+  s_27c1e659f84fe6::t_b01e72b4ab550f 6-9
+README.md
+  s_27c1e659f84fe6::t_a445d5d10d0112 27-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "ee0ff12e9e3468a26f265c27a93f2bf5a833dfbc",
+  "prompts": {},
+  "sessions": {
+    "s_27c1e659f84fe6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "s_27c1e659f84fe6",
+        "model": "unknown"
+      },
+      "human_author": "Abhi Pandya <abpandya106@gmail.com>"
+    }
+  }
+}
