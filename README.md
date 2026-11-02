@@ -24,6 +24,12 @@ marketplace and installs `warp@codex-warp` for Warp terminal notifications.
 Already installed and enabled plugins are skipped. Restart Codex after installation.
 The plugin's `jq` dependency is included in both package lists.
 
+The `.zshrc` wraps `codex` with `--dangerously-bypass-hook-trust` and
+`--dangerously-bypass-approvals-and-sandbox`. This skips hook trust review,
+including for new or changed hooks, and disables command approvals and sandboxing
+for shell launches. Run `command codex` to skip the wrapper; the installed Codex
+configuration defaults still apply.
+
 Symlink (or copy) the files into your home directory:
 
 ```bash
