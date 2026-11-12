@@ -1,0 +1,9 @@
+{
+  "name": "personal",
+  "version": "0.1.0",
+  "description": "Abhi's shared skills for Claude Code and Codex.",
+  "author": {
+    "name": "Abhi Pandya"
+  },
+  "repository": "https://github.com/abhishek-pandya/dotfiles"
+}

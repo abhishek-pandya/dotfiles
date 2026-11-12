@@ -260,6 +260,7 @@ fi
 configure_delta
 configure_claude
 configure_codex
+bash "$DOTFILES/install-skills.sh"
 configure_codex_plugins
 configure_gh
 

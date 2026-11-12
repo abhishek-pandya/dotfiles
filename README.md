@@ -1,6 +1,16 @@
 # dotfiles
 
-Personal shell configuration files.
+Personal shell configuration and coding-agent skills.
+
+## AI skills
+
+The [skills marketplace](ai/README.md) includes pstack from `cursor/plugins` and
+a personal plugin for Claude Code and Codex. Your own skills skeleton lives under
+`ai/plugin/`. See that guide for local installation and environment setup.
+
+`install.sh` calls `install-skills.sh` to install `pstack@abhi` for Claude Code
+and Codex when available. Run `bash install-skills.sh` for skills-only setup.
+Reruns skip enabled installations; missing agents print a skip message.
 
 ## Contents
 - `.bashrc` — Bash configuration, includes the Warp "Auto-Warpify" bootstrap hook.
