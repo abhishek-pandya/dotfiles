@@ -8,10 +8,11 @@ and Codex:
 
 Pstack is fetched directly from your fork, using the same
 `harness/pstack/claude-code` package as upstream's marketplace. It is pinned to
-commit `21fa802da437a0f7e70f3a0f17538f9cae6d0278` (plugin version `0.15.36`).
+commit `0167dad14e2da04e628a1a2d620fa680f61d8c5d` (plugin version `0.15.36-abhi.1`).
 The pin keeps installations consistent across environments. No upstream skill
 files are copied into this repository. The fork adds native-harness delegation
-guidance to `poteto-mode` and its generated package. Some pstack workflows assume particular
+guidance to `poteto-mode`. Its `reflect` workflow publishes approved pstack edits
+to the fork and updates the dotfiles pin. Some pstack workflows assume particular
 agent tools or models; installation does not guarantee every workflow works in
 every agent.
 
