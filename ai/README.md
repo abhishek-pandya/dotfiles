@@ -135,12 +135,18 @@ claude plugin marketplace update abhi
 claude plugin update pstack@abhi
 ```
 
-For Codex, refresh the marketplace and install its current plugin version:
+For Codex with a local marketplace, update the dotfiles checkout first, then
+install the version from its current pin:
 
 ```sh
-codex plugin marketplace upgrade abhi
+# Run from the dotfiles checkout.
+git pull --ff-only
 codex plugin add pstack@abhi
 ```
+
+For a Git-backed marketplace, run `codex plugin marketplace upgrade abhi` before
+`codex plugin add pstack@abhi`. The upgrade command does not apply to a marketplace
+registered from a local directory.
 
 Start a new session to use the updated skills.
 
