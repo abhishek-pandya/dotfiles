@@ -260,7 +260,6 @@ fi
 configure_delta
 configure_claude
 configure_codex
-bash "$DOTFILES/install-skills.sh"
 configure_codex_plugins
 configure_gh
 
@@ -270,4 +269,8 @@ if [[ "${IS_ON_ONA:-}" == "true" ]]; then
 
   # Append source line to rc file (idempotent)
   grep -qxF "source ~/dotfiles/.zshrc" ~/.zshrc || echo "source ~/dotfiles/.zshrc" >> ~/.zshrc
+fi
+
+if ! bash "$DOTFILES/install-skills.sh"; then
+  log "WARNING: Pstack setup failed; dotfiles setup is complete. Retry with: bash \"$DOTFILES/install-skills.sh\"" >&2
 fi

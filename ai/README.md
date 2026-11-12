@@ -4,13 +4,14 @@ This repository exposes plugins through the `abhi` marketplace for Claude Code
 and Codex:
 
 - `personal`: your own skills; currently an empty skeleton.
-- `pstack`: upstream coding-agent workflows from [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack).
+- `pstack`: coding-agent workflows from [your fork](https://github.com/abhishek-pandya/plugins/tree/main/pstack) of [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack).
 
-Pstack is fetched directly from upstream, using the same
+Pstack is fetched directly from your fork, using the same
 `harness/pstack/claude-code` package as upstream's marketplace. It is pinned to
-commit `ec569379616a4826b98f0f0a205dd3411b573611` (plugin version `0.15.36`).
+commit `21fa802da437a0f7e70f3a0f17538f9cae6d0278` (plugin version `0.15.36`).
 The pin keeps installations consistent across environments. No upstream skill
-files are copied into this repository. Some pstack workflows assume particular
+files are copied into this repository. The fork adds native-harness delegation
+guidance to `poteto-mode` and its generated package. Some pstack workflows assume particular
 agent tools or models; installation does not guarantee every workflow works in
 every agent.
 
@@ -35,7 +36,13 @@ Run the skills installer from any directory:
 bash /path/to/dotfiles/install-skills.sh
 ```
 
-The full `install.sh` bootstrap also calls it. It registers this checkout as the
+The full `install.sh` bootstrap calls it after completing shell and tool setup.
+If skills installation fails, the full bootstrap prints a warning and still
+succeeds, so plugin download failures do not prevent Ona shell setup or fail
+container initialization. The standalone skills installer still exits nonzero
+on failure and can be rerun independently.
+
+It registers this checkout as the
 `abhi` marketplace and installs `pstack@abhi` for each agent on `PATH`. Claude
 uses user scope. Missing agents print a skip message; rerun after installing them.
 The installer requires `jq` when either agent is present.
@@ -104,6 +111,7 @@ settings sources. See [Claude's managed settings documentation](https://code.cla
 
 ```sh
 python3 tests/test-install-skills.py
+python3 tests/test-bootstrap.py
 ```
 
 The tests run the installer with isolated CLI fixtures and temporary state.
@@ -111,6 +119,8 @@ They check first installs, repeated runs, missing agents, recovery, and failures
 without changing your real agent configuration or downloading plugins. They do
 not prove that your machine's network or organization policy permits installing
 pstack. Those checks require the real CLIs in the target environment.
+The bootstrap test runs the Ona setup with external setup commands stubbed and
+checks that a failing skills install still leaves the shell source line in place.
 
 ## Publish and update
 
@@ -133,7 +143,23 @@ codex plugin add pstack@abhi
 
 Start a new session to use the updated skills.
 
-To upgrade pstack, first update its `source.sha` in
-`.claude-plugin/marketplace.json` to the upstream commit you want, then refresh
-and update as above. Update commands alone do not move the pin. Use
-`personal@abhi` instead when updating your own plugin.
+To upgrade pstack, merge changes from `cursor/plugins` into your fork, preserve
+local changes, and run `node scripts/generate-pstack-harness-trees.mjs` followed by
+`node scripts/generate-pstack-harness-trees.mjs --check`. Commit and push the source
+and generated changes. Then update `source.sha` in
+`.claude-plugin/marketplace.json` to that fork commit, and refresh and update as
+above. Update commands alone do not move the pin. Use `personal@abhi` instead
+when updating your own plugin.
+
+For a local checkout that keeps only pstack and its build scripts visible:
+
+```sh
+git clone --filter=blob:none --sparse https://github.com/abhishek-pandya/plugins.git pstack-fork
+cd pstack-fork
+git sparse-checkout set pstack harness/pstack scripts
+git remote add upstream https://github.com/cursor/plugins.git
+```
+
+The GitHub fork retains the full repository for upstream merges. The marketplace's
+`git-subdir` source installs only `harness/pstack/claude-code`; no extra clone step
+is needed in the dotfiles installer.
