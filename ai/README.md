@@ -8,11 +8,15 @@ and Codex:
 
 Pstack is fetched directly from your fork, using the same
 `harness/pstack/claude-code` package as upstream's marketplace. It is pinned to
-commit `0167dad14e2da04e628a1a2d620fa680f61d8c5d` (plugin version `0.15.36-abhi.1`).
+commit `f6d9336df8a3b9085e4e598edf2389c607643cad` (plugin version `0.15.36-abhi.3`).
 The pin keeps installations consistent across environments. No upstream skill
-files are copied into this repository. The fork adds native-harness delegation
-guidance to `poteto-mode`. Its `reflect` workflow publishes approved pstack edits
-to the fork and updates the dotfiles pin. Some pstack workflows assume particular
+files are copied into this repository. The package includes `abhi-mode`, and
+`poteto-mode` reads it for personal coding and planning guidance before choosing
+a workflow. Its guidance also applies to delegated agents. Invoke `poteto-mode`
+to use the workflow and personal guidance together.
+
+The fork's `reflect` workflow publishes approved pstack edits and updates the
+dotfiles pin. Some pstack workflows assume particular
 agent tools or models; installation does not guarantee every workflow works in
 every agent.
 
