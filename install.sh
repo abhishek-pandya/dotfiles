@@ -88,6 +88,20 @@ install_acli() {
   return "$status"
 }
 
+configure_acli() (
+  # Keep the token out of traces even when bootstrap runs with bash -x.
+  set +x
+  if [[ -z "${JIRA_API_KEY:-}" ]]; then
+    log "JIRA_API_KEY missing; skipping Jira login. Set it and rerun install.sh."
+    return
+  fi
+  command -v acli &>/dev/null || { log "ACLI missing; skipping Jira login."; return; }
+
+  log "Authenticating Jira for abhi.pandya@vanta.com on vanta.atlassian.net..."
+  printf '%s' "$JIRA_API_KEY" | acli jira auth login \
+    --site vanta.atlassian.net --email abhi.pandya@vanta.com --token
+)
+
 # Ona (Ubuntu): install whatever from apt-packages.txt isn't already present.
 #
 # The archive.ubuntu.com mirror reachable from Ona can crawl at ~20-70 kB/s with
@@ -122,6 +136,7 @@ install_ona() {
 
   install_neovim
   install_acli || log "WARNING: ACLI installation failed; rerun install.sh to retry."
+  configure_acli || log "WARNING: Jira login failed; check JIRA_API_KEY and rerun install.sh."
 
   # On Debian/Ubuntu the bat binary is installed as 'batcat'; expose it as 'bat'.
   if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then

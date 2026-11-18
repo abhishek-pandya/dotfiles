@@ -27,8 +27,11 @@ On Ona, the installer also installs Atlassian CLI (`acli`) into `/usr/local/bin`
 using the [official Linux binary](https://developer.atlassian.com/cloud/acli/guides/install-linux/)
 for x86-64 or ARM64. Existing installations are skipped. This runs on each
 environment's dotfiles bootstrap; rerun `bash ~/dotfiles/install.sh` in existing
-environments to install it there. Authentication is configured separately with
-`acli jira auth login`.
+environments to install it there. When `JIRA_API_KEY` is available in the bootstrap
+environment, the installer automatically logs in to `vanta.atlassian.net` as
+`abhi.pandya@vanta.com`. The key is passed through standard input with shell tracing
+disabled. Reruns refresh the login with the current key. A missing key skips login;
+a failed login prints a warning without stopping the rest of setup.
 
 The installer sets Codex full-access defaults (`approval_policy = "never"` and
 `sandbox_mode = "danger-full-access"`) in `${CODEX_HOME:-$HOME/.codex}/config.toml`,
