@@ -63,6 +63,31 @@ install_neovim() {
   rm -rf "$tmp"
 }
 
+install_acli() {
+  command -v acli &>/dev/null && return
+  command -v curl &>/dev/null || { log "curl missing; cannot install ACLI"; return 1; }
+
+  local arch tmp status=0
+  case "$(uname -m)" in
+    x86_64)        arch="amd64" ;;
+    aarch64|arm64) arch="arm64" ;;
+    *) log "No ACLI binary for $(uname -m)"; return 1 ;;
+  esac
+
+  log "Installing Atlassian CLI..."
+  tmp="$(mktemp -d)" || return 1
+  if curl -fsSL --retry 3 --connect-timeout 10 \
+      "https://acli.atlassian.com/linux/latest/acli_linux_$arch/acli" \
+      -o "$tmp/acli"; then
+    sudo install -o root -g root -m 0755 "$tmp/acli" /usr/local/bin/acli \
+      && /usr/local/bin/acli --version || status=$?
+  else
+    status=1
+  fi
+  rm -rf "$tmp"
+  return "$status"
+}
+
 # Ona (Ubuntu): install whatever from apt-packages.txt isn't already present.
 #
 # The archive.ubuntu.com mirror reachable from Ona can crawl at ~20-70 kB/s with
@@ -96,6 +121,7 @@ install_ona() {
   fi
 
   install_neovim
+  install_acli || log "WARNING: ACLI installation failed; rerun install.sh to retry."
 
   # On Debian/Ubuntu the bat binary is installed as 'batcat'; expose it as 'bat'.
   if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then

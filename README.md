@@ -23,6 +23,13 @@ Run `bash install.sh` during environment setup to install packages and configure
 tools. The installer requires Python 3.11 or newer for updating Codex's TOML
 configuration.
 
+On Ona, the installer also installs Atlassian CLI (`acli`) into `/usr/local/bin`
+using the [official Linux binary](https://developer.atlassian.com/cloud/acli/guides/install-linux/)
+for x86-64 or ARM64. Existing installations are skipped. This runs on each
+environment's dotfiles bootstrap; rerun `bash ~/dotfiles/install.sh` in existing
+environments to install it there. Authentication is configured separately with
+`acli jira auth login`.
+
 The installer sets Codex full-access defaults (`approval_policy = "never"` and
 `sandbox_mode = "danger-full-access"`) in `${CODEX_HOME:-$HOME/.codex}/config.toml`,
 preserving other settings. It also defaults to `gpt-6-astra` with medium reasoning,
