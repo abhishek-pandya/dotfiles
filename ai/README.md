@@ -8,7 +8,7 @@ and Codex:
 
 Pstack is fetched directly from your fork, using the same
 `harness/pstack/claude-code` package as upstream's marketplace. It is pinned to
-commit `f6d9336df8a3b9085e4e598edf2389c607643cad` (plugin version `0.15.36-abhi.3`).
+commit `21aa13029f7dc6251ad5e35438be4dd701a6560c` (plugin version `0.15.36-abhi.4`).
 The pin keeps installations consistent across environments. No upstream skill
 files are copied into this repository. The package includes `abhi-mode`, and
 `poteto-mode` reads it for personal coding and planning guidance before choosing

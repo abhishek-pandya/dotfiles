@@ -16,7 +16,7 @@
         "source": "git-subdir",
         "url": "https://github.com/abhishek-pandya/plugins.git",
         "path": "./harness/pstack/claude-code",
-        "sha": "f6d9336df8a3b9085e4e598edf2389c607643cad"
+        "sha": "21aa13029f7dc6251ad5e35438be4dd701a6560c"
       },
       "category": "Productivity",
       "policy": {
